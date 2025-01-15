@@ -2,3 +2,6 @@ name: bingo-server-plugin
 version: '1.0-SNAPSHOT'
 main: com.github.manueljonasgreub.BingoMain
 api-version: '1.21'
+commands:
+  print:
+    description: Says hello to the player.
