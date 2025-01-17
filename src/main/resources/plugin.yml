@@ -5,3 +5,14 @@ api-version: '1.21'
 commands:
   print:
     description: Says hello to the player.
+    usage: /print
+
+  bingo:
+    description: Manages the bingo game.
+    permission: bingo.manage
+    permission-message: You do not have permission to use this command.
+
+permissions:
+    bingo.manage:
+        description: Allows the player to manage the bingo game.
+        default: op
