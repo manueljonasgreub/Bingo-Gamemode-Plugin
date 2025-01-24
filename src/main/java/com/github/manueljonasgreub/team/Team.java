@@ -1,5 +1,7 @@
 package com.github.manueljonasgreub.team;
 
+import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.item.BingoItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,17 +12,22 @@ public class Team {
 
     public String name;
     public List<Player> players;
-    public List<ItemStack> progress;
+    public List<BingoItem> progress;
 
 
-    public Team(String name, List<ItemStack> bingoItems) {
+    public Team(String name, List<BingoItem> bingoItems) {
         this.name = name;
         this.progress = bingoItems;
         this.players = new ArrayList<>();
     }
 
-    public void markItemAsFound(ItemStack item){
-        progress.remove(item);
+    public void markItemAsFound(BingoItem item){
+        for (BingoItem bingoItem : progress) {
+            if (bingoItem.getItemStack().getType() == item.getItemStack().getType()) {
+                bingoItem.setFound(true);
+            }
+        }
+
     }
 
     public void addPlayer(Player player){

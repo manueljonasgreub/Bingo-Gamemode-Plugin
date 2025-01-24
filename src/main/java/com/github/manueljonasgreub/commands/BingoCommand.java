@@ -1,6 +1,7 @@
 package com.github.manueljonasgreub.commands;
 
 import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -46,6 +47,41 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                     sendUsage(player);
                 }
                 return true;
+
+            case "team":
+                if (args.length == 3) {
+                    try {
+                        if (args[1].equals("join")) {
+                            for (Team team : BingoMain.getInstance().getGame().teams) {
+                                if (team.name.equals(args[2])) {
+                                    team.addPlayer(player);
+                                    player.sendMessage("You have joined " + team.name);
+                                    return true;
+                                }
+                            }
+                            player.sendMessage("Team " + args[2] + " does not exist.");
+                            return true;
+                        }
+                        if (args[1].equals("leave")) {
+                            for (Team team : BingoMain.getInstance().getGame().teams) {
+                                if (team.name.equals(args[2])) {
+                                    team.removePlayer(player);
+                                    player.sendMessage("You have left " + team.name);
+                                    return true;
+                                }
+                            }
+                            player.sendMessage("Team " + args[2] + " does not exist.");
+                            return true;
+                        }
+                    } catch (Exception ex) {
+                        sendUsage(player);
+                    }
+                } else {
+                    sendUsage(player);
+                }
+                return true;
+
+
             case "pause":
                 BingoMain.getInstance().getGame().pause();
                 return true;

@@ -1,26 +1,28 @@
 package com.github.manueljonasgreub.game;
 
 import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.api.BingoAPI;
+import com.github.manueljonasgreub.item.BingoItem;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Game {
 
     public boolean isRunning = false;
     public boolean isCountdown = false;
     public int time = 0;
-    public List<ItemStack> bingoItems;
+    public List<BingoItem> bingoItems;
     public List<Team> teams;
 
 
@@ -28,6 +30,10 @@ public class Game {
     public Game() {
 
         teams = new ArrayList<>();
+        teams.add(new Team("1", new ArrayList<>()));
+        teams.add(new Team("2", new ArrayList<>()));
+        teams.add(new Team("3", new ArrayList<>()));
+        teams.add(new Team("4", new ArrayList<>()));
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(BingoMain.getInstance(),
                 () -> {
@@ -57,10 +63,23 @@ public class Game {
 
     public void startGame(){
 
-        bingoItems = getBingoItems();
-        resume();
+        try{
+            BingoAPI api = new BingoAPI();
+            bingoItems = api.fetchBingoItems();
+            resume();
+
+            for (BingoItem item : bingoItems){
+                BingoMain.getInstance().getLogger().info(item.getItemStack().getType().toString());
+            }
+        }
+        catch (Exception ex){
+            BingoMain.getInstance().getLogger().info(ex.getMessage());
+        }
 
 
+        teams = teams.stream()
+                .filter(team -> !team.players.isEmpty())
+                .collect(Collectors.toList());
 
 
     }
@@ -103,36 +122,23 @@ public class Game {
 
     }
 
-    private List<ItemStack> getBingoItems(){
-        List<ItemStack> items = new ArrayList<>();
-        Material[] materials = Material.values();
-        List<Material> materialList = new ArrayList<>();
-        Collections.addAll(materialList, materials);
-        Collections.shuffle(materialList);
-
-        for (Material material : materialList) {
-            if(material.isItem()){
-                System.out.println("Item " + material);
-                items.add(new ItemStack(material));
-                if(items.size() >= 25) break;
-            }
-        }
-
-        return items;
-    }
 
     public boolean isBingoItem(ItemStack item){
-        for (ItemStack bingoItem : bingoItems){
-            if(bingoItem.getType() == item.getType()) return true;
+        for (BingoItem bingoItem : bingoItems){
+            if(bingoItem.getItemStack().getType() == item.getType()) return true;
         }
         return false;
     }
 
-    public void playerFoundItem(Player player, ItemStack item){
+    public void playerFoundItem(Player player, BingoItem item){
         for (Team team : teams){
             if(team.players.contains(player)){
-                team.markItemAsFound(item);
-                return;
+                if (item.isFound()) {
+                    BingoMain.getInstance().getLogger().info("Item has already been found!");
+                }
+                else{
+                    team.markItemAsFound(item);
+                }
             }
         }
     }
@@ -143,7 +149,6 @@ public class Game {
 
     public void set(int seconds) {
         time = seconds;
-        pause();
     }
 
     public void resume() {

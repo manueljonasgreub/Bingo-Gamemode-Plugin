@@ -2,19 +2,24 @@ package com.github.manueljonasgreub.item;
 
 import org.bukkit.inventory.ItemStack;
 
-public class BingoItem extends ItemStack {
-
-    private boolean isFound = false;
+public class BingoItem {
+    private final ItemStack itemStack;
+    private boolean found;
 
     public BingoItem(ItemStack itemStack) {
-        super(itemStack);
+        this.itemStack = itemStack;
+        this.found = false;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 
     public boolean isFound() {
-        return isFound;
+        return found;
     }
 
     public void setFound(boolean found) {
-        isFound = found;
+        this.found = found;
     }
 }
