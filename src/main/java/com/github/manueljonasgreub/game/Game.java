@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 public class Game {
 
-    public boolean isRunning = false;
-    public boolean isCountdown = false;
-    public int time = 0;
-    public List<BingoItem> bingoItems;
-    public List<Team> teams;
+    private boolean isRunning = false;
+    private boolean isCountdown = false;
+    private int time = 0;
+    private List<BingoItem> bingoItems;
+    private List<Team> teams;
 
 
 
@@ -65,11 +65,11 @@ public class Game {
 
         try{
             BingoAPI api = new BingoAPI();
-            bingoItems = api.fetchBingoItems();
+            bingoItems = api.fetchBingoItems(5, "4P", new String[]{"1", "2", "3", "4"}, "easy");
             resume();
 
             for (BingoItem item : bingoItems){
-                BingoMain.getInstance().getLogger().info(item.getItemStack().getType().toString());
+                BingoMain.getInstance().getLogger().info(item.getName());
             }
         }
         catch (Exception ex){
@@ -125,7 +125,7 @@ public class Game {
 
     public boolean isBingoItem(ItemStack item){
         for (BingoItem bingoItem : bingoItems){
-            if(bingoItem.getItemStack().getType() == item.getType()) return true;
+            if(bingoItem.getType() == item.getType()) return true;
         }
         return false;
     }

@@ -1,25 +1,39 @@
 package com.github.manueljonasgreub.item;
 
+import com.google.gson.JsonObject;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 public class BingoItem {
-    private final ItemStack itemStack;
-    private boolean found;
+    private int row;
+    private int column;
+    private String type;
+    private String name;
+    private String difficulty;
+    private Map<String, Boolean> completed;
 
-    public BingoItem(ItemStack itemStack) {
-        this.itemStack = itemStack;
-        this.found = false;
+    public int getRow() {
+        return row;
     }
 
-    public ItemStack getItemStack() {
-        return itemStack;
+    public int getColumn() {
+        return column;
     }
 
-    public boolean isFound() {
-        return found;
+    public String getType() {
+        return type;
     }
 
-    public void setFound(boolean found) {
-        this.found = found;
+    public String getName() {
+        return name;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public Map<String, Boolean> getCompleted() {
+        return completed;
     }
 }

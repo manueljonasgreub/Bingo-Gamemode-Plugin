@@ -52,7 +52,7 @@ public class PlayerEventListener implements Listener {
         ItemStack item = event.getItem().getItemStack();
 
         if (BingoMain.getInstance().getGame().isBingoItem(item)) {
-            BingoItem bingoItem = new BingoItem(item);
+            BingoItem bingoItem = new BingoItem();
             BingoMain.getInstance().getGame().playerFoundItem(player, bingoItem);
             player.sendMessage("You found the item: " + item.getType().name());
         }

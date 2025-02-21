@@ -13,6 +13,7 @@ public class Team {
     public String name;
     public List<Player> players;
     public List<BingoItem> progress;
+    public String placement;
 
 
     public Team(String name, List<BingoItem> bingoItems) {
@@ -42,5 +43,9 @@ public class Team {
             players.remove(player);
         }
         player.sendMessage("§cYou are no longer in team " + name + "!");
+    }
+
+    public String getPlacement() {
+        return placement;
     }
 }

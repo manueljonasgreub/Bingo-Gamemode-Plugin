@@ -1,25 +1,19 @@
 package com.github.manueljonasgreub.api;
 
+import com.github.manueljonasgreub.item.BingoItem;
+
 import java.util.List;
 import java.util.Map;
 
-public class MapRAW {
-    private List<Map<String, Object>> settings;
-    private List<Map<String, Object>> items;
+    public class MapRAW {
+        private Settings settings;
+        private List<BingoItem> items;
 
-    public List<Map<String, Object>> getSettings() {
-        return settings;
-    }
+        public Settings getSettings() {
+            return settings;
+        }
 
-    public void setSettings(List<Map<String, Object>> settings) {
-        this.settings = settings;
+        public List<BingoItem> getItems() {
+            return items;
+        }
     }
-
-    public List<Map<String, Object>> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Map<String, Object>> items) {
-        this.items = items;
-    }
-}
