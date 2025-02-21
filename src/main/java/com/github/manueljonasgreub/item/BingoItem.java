@@ -3,6 +3,7 @@ package com.github.manueljonasgreub.item;
 import com.google.gson.JsonObject;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class BingoItem {
@@ -12,6 +13,15 @@ public class BingoItem {
     private String name;
     private String difficulty;
     private Map<String, Boolean> completed;
+
+    public BingoItem(int row, int column, String type, String name, String difficulty) {
+        this.row = row;
+        this.column = column;
+        this.type = type;
+        this.name = name;
+        this.difficulty = difficulty;
+        this.completed = new HashMap<>();
+    }
 
     public int getRow() {
         return row;

@@ -12,22 +12,18 @@ public class Team {
 
     public String name;
     public List<Player> players;
-    public List<BingoItem> progress;
     public String placement;
 
 
-    public Team(String name, List<BingoItem> bingoItems) {
+    public Team(String name) {
         this.name = name;
-        this.progress = bingoItems;
         this.players = new ArrayList<>();
     }
 
-    public void markItemAsFound(BingoItem item){
-        for (BingoItem bingoItem : progress) {
-            if (bingoItem.getItemStack().getType() == item.getItemStack().getType()) {
-                bingoItem.setFound(true);
-            }
-        }
+    public void markItemAsFound(BingoItem item, Team team){
+
+        BingoMain.getInstance().getGame().getMapRAW().getItems();
+        item.getCompleted().put(team.name, true);
 
     }
 
@@ -35,16 +31,19 @@ public class Team {
         if(!(players.contains(player))){
             players.add(player);
         }
-        player.sendMessage("§aYou are now in team " + name + "!");
+
     }
 
     public void removePlayer(Player player){
         if(players.contains(player)){
             players.remove(player);
         }
-        player.sendMessage("§cYou are no longer in team " + name + "!");
+
     }
 
+    public void setPlacement(String placement) {
+        this.placement = placement;
+    }
     public String getPlacement() {
         return placement;
     }

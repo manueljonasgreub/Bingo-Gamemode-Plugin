@@ -2,10 +2,8 @@ package com.github.manueljonasgreub.api;
 
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.item.BingoItem;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.github.manueljonasgreub.team.Team;
+import com.google.gson.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,29 +22,21 @@ import java.util.Map;
 
 public class BingoAPI {
 
-    private final String API_BASE_URL = "http://167.99.130.13";
+    private final String API_BASE_URL = "http://167.99.130.136";
     private List<BingoItem> bingoItems;
 
-    public List<BingoItem> fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String difficulty) {
+    public BingoAPIResponse fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String difficulty, List<Team> teams) {
         try {
-            // Erstelle die URL für die Anfrage
+
             String apiUrl = API_BASE_URL + "/create/";
 
-            // Erstelle das JSON-Objekt für den Request Body
             JsonObject requestBody = new JsonObject();
-            requestBody.addProperty("GridSize", gridSize);
-            requestBody.addProperty("GameMode", gamemode);
+            requestBody.addProperty("grid_size", gridSize);
+            requestBody.addProperty("game_mode", gamemode);
+            String teamNamesString = String.join(",", teamNames);
+            requestBody.addProperty("team_names", teamNamesString);
+            requestBody.addProperty("difficulty", difficulty);
 
-            // TeamNames als JSON-Array
-            JsonArray teamNamesArray = new JsonArray();
-            for (String teamName : teamNames) {
-                teamNamesArray.add(teamName);
-            }
-            requestBody.add("TeamNames", teamNamesArray);
-
-            requestBody.addProperty("Difficulty", difficulty);
-
-            // Sende die POST-Anfrage
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -54,13 +44,12 @@ public class BingoAPI {
             connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
 
-            // Sende den Request Body
+
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = requestBody.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
 
-            // Lese die Antwort
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
             StringBuilder content = new StringBuilder();
@@ -70,17 +59,28 @@ public class BingoAPI {
             in.close();
             connection.disconnect();
 
-            // Parse die JSON-Antwort
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            JsonObject mapRAW = jsonResponse.getAsJsonObject("mapRAW");
+            JsonObject mapRAWJson = jsonResponse.getAsJsonObject("mapRAW");
 
-            // Verwende Gson, um die Antwort in ein BingoResponse-Objekt umzuwandeln
             Gson gson = new Gson();
-            BingoAPIResponse bingoResponse = gson.fromJson(mapRAW, BingoAPIResponse.class);
+            MapRAW mapRAW = gson.fromJson(mapRAWJson, MapRAW.class);
+            String mapURL = jsonResponse.get("mapURL").getAsString();
 
-            // Speichere die Bingo-Items
-            this.bingoItems = bingoResponse.getItems();
-            return bingoItems;
+            for (JsonElement teamJson : mapRAWJson.getAsJsonObject("settings").getAsJsonArray("teams")) {
+                String teamName = teamJson.getAsJsonObject().get("name").getAsString();
+                String placement = teamJson.getAsJsonObject().get("placement").getAsString();
+                for (Team team : teams) {
+                    if (team.name.equals(teamName)) {
+                        team.setPlacement(placement);
+                    }
+                }
+            }
+
+            BingoAPIResponse bingoResponse = new BingoAPIResponse();
+            bingoResponse.setMapRAW(mapRAW);
+            bingoResponse.setMapURL(API_BASE_URL + mapURL);
+
+            return bingoResponse;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,12 +88,14 @@ public class BingoAPI {
         }
     }
 
-    public String updateBingoCard(JsonObject mapRAW) {
+    public BingoAPIUpdateResponse updateBingoCard(MapRAW mapRAW) {
         try {
-            // Erstelle die URL für die Anfrage
             String apiUrl = API_BASE_URL + "/update/";
 
-            // Sende die POST-Anfrage
+
+            JsonObject requestBody = new JsonObject();
+            requestBody.add("mapRAW", new Gson().toJsonTree(mapRAW));
+
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -101,13 +103,11 @@ public class BingoAPI {
             connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
 
-            // Sende den mapRAW-Teil als JSON
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = mapRAW.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
 
-            // Lese die Antwort
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
             StringBuilder content = new StringBuilder();
@@ -117,9 +117,11 @@ public class BingoAPI {
             in.close();
             connection.disconnect();
 
-            // Parse die JSON-Antwort
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            return jsonResponse.get("url").getAsString();
+            String bingo = jsonResponse.has("bingo") && !jsonResponse.get("bingo").isJsonNull() ? jsonResponse.get("bingo").getAsString() : null;
+            String urlPath = jsonResponse.get("url").getAsString();
+
+            return new BingoAPIUpdateResponse(bingo, API_BASE_URL + urlPath);
 
         } catch (Exception e) {
             e.printStackTrace();

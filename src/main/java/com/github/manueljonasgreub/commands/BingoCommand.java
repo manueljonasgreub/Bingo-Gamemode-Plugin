@@ -4,6 +4,9 @@ import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -52,10 +55,11 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 if (args.length == 3) {
                     try {
                         if (args[1].equals("join")) {
-                            for (Team team : BingoMain.getInstance().getGame().teams) {
+                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
                                 if (team.name.equals(args[2])) {
                                     team.addPlayer(player);
-                                    player.sendMessage("You have joined " + team.name);
+                                    player.sendMessage("§aYou are now in team " + team.name + "!");
+                                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, SoundCategory.PLAYERS, 1.0f, 1.0f);
                                     return true;
                                 }
                             }
@@ -63,14 +67,21 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                             return true;
                         }
                         if (args[1].equals("leave")) {
-                            for (Team team : BingoMain.getInstance().getGame().teams) {
+                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
                                 if (team.name.equals(args[2])) {
                                     team.removePlayer(player);
-                                    player.sendMessage("You have left " + team.name);
+                                    player.sendMessage("§cYou are no longer in team " + team.name + "!");
+                                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, SoundCategory.PLAYERS, 1.0f, 1.0f);
                                     return true;
                                 }
                             }
                             player.sendMessage("Team " + args[2] + " does not exist.");
+                            return true;
+                        }
+                        if (args[1].equals("list")) {
+                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
+                                player.sendMessage(team.name);
+                            }
                             return true;
                         }
                     } catch (Exception ex) {
