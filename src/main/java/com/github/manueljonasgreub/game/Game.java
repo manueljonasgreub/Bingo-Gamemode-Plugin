@@ -11,8 +11,11 @@ import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
@@ -70,24 +73,36 @@ public class Game {
                     }
 
 
-
                 },
                 0,
                 20);
     }
 
-    public void startGame(){
+    public void startGame() {
 
-        try{
+        try {
+
+            teams = teams.stream()
+                    .filter(team -> !team.players.isEmpty())
+                    .collect(Collectors.toList());
+
+            List<String> teamNames = teams.stream()
+                    .map(team -> team.name)
+                    .toList();
+
+            String[] teamNamesArray = teamNames.toArray(new String[0]);
+
+
             BingoAPI api = new BingoAPI();
-            BingoAPIResponse apiResponse = api.fetchBingoItems(5, "4P", new String[]{"1", "2", "3", "4"}, "easy", teams);
+            BingoAPIResponse apiResponse = api.fetchBingoItems(5, teams.size() + "P", teamNamesArray, "easy", teams);
             mapRAW = apiResponse.getMapRAW();
             bingoItems = apiResponse.getMapRAW().getItems();
             String mapURL = apiResponse.getMapURL();
             resume();
 
-            for (BingoItem item : bingoItems){
-                BingoMain.getInstance().getLogger().info(item.getName());
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.sendTitle("§a§lSTART", "", 10, 70, 20);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
 
             MapView mapView = Bukkit.createMap(BingoMain.getInstance().getServer().getWorld("world"));
@@ -102,18 +117,22 @@ public class Game {
             mapItem.setItemMeta(mapMeta);
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getInventory().addItem(mapItem);
+                boolean hasMap = false;
+                for (ItemStack itemStack : player.getInventory()) {
+                    if (itemStack != null) {
+                        if (itemStack.getType().equals(Material.FILLED_MAP)) {
+                            itemStack.setItemMeta(mapMeta);
+                            hasMap = true;
+                        }
+                    }
+                }
+
+                if (!hasMap) player.getInventory().addItem(mapItem);
             }
 
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             BingoMain.getInstance().getLogger().info(ex.getMessage());
         }
-
-
-        teams = teams.stream()
-                .filter(team -> !team.players.isEmpty())
-                .collect(Collectors.toList());
 
 
     }
@@ -157,36 +176,101 @@ public class Game {
     }
 
 
-    public boolean isBingoItem(ItemStack item){
+    public boolean isBingoItem(ItemStack item) {
 
-        for (BingoItem bingoItem : bingoItems){
-            if(bingoItem.getName().equals(item.getType().name().toLowerCase())) {
+        for (BingoItem bingoItem : bingoItems) {
+            if (bingoItem.getName().equals(item.getType().name().toLowerCase())) {
                 return true;
             }
         }
         return false;
     }
 
-    public void playerFoundItem(Player player, BingoItem item){
-        for (Team team : teams){
-            if(team.players.contains(player)){
+    public void playerFoundItem(Player player, BingoItem item) {
+        for (Team team : teams) {
+            if (team.players.contains(player)) {
                 if (item.getCompleted().get(team.name)) {
-                    BingoMain.getInstance().getLogger().info("Item has already been found!");
-                }
-                else{
-                    team.markItemAsFound(item, team);
-                    try{
+                } else {
+
+                    for (BingoItem bingoItem : bingoItems) {
+                        if (bingoItem.getName().equals(item.getName())) {
+                            bingoItem.getCompleted().put(team.name, true);
+                        }
+                    }
+
+                    mapRAW.setItems(bingoItems);
+
+                    for (Player currentPlayer : Bukkit.getOnlinePlayers()) {
+                        if (team.players.contains(currentPlayer)) {
+                            currentPlayer.sendMessage("§a" + player.getName() + " §ffound the item " + item.getName().replace("_", " ").toLowerCase() + "!");
+                            currentPlayer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                            currentPlayer.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_WORK_CARTOGRAPHER, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                        } else {
+                            currentPlayer.sendMessage("§c" + player.getName() + " §ffound the item " + item.getName().replace("_", " ").toLowerCase() + "!");
+                            currentPlayer.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, SoundCategory.PLAYERS, 1.0f, 0.9f);
+                            currentPlayer.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_WORK_CARTOGRAPHER, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                        }
+                    }
+
+
+                    try {
                         BingoAPI api = new BingoAPI();
                         BingoAPIUpdateResponse response = api.updateBingoCard(mapRAW);
-                    }
-                    catch (Exception ex){
-                        BingoMain.getInstance().getLogger().info(ex.getMessage());
+
+                        if (response != null) {
+                            var bingo = response.getBingo();
+                            String mapURL = response.getImageUrl();
+                            BingoMain.getInstance().getLogger().info(mapURL);
+
+
+                            MapView mapView = Bukkit.createMap(BingoMain.getInstance().getServer().getWorld("world"));
+                            mapView.getRenderers().clear();
+
+                            BingoMapRenderer renderer = new BingoMapRenderer(mapURL);
+                            mapView.addRenderer(renderer);
+
+                            ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
+                            MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
+                            mapMeta.setMapView(mapView);
+                            mapItem.setItemMeta(mapMeta);
+
+                            for (Player currentPlayer : Bukkit.getOnlinePlayers()) {
+                                for (ItemStack currentMapItem : currentPlayer.getInventory())
+                                    if (currentMapItem != null) {
+                                        if (currentMapItem.getType().equals(Material.FILLED_MAP)) {
+                                            currentMapItem.setItemMeta(mapMeta);
+                                        }
+                                    }
+
+                            }
+
+
+                            if (bingo != null) {
+                                gameWon(bingo, team);
+                            }
+
+                        } else {
+                            BingoMain.getInstance().getLogger().info("§cFailed to update the bingo card.");
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        BingoMain.getInstance().getLogger().info("§cAn error occurred while updating the bingo card.");
                     }
                 }
             }
         }
     }
 
+
+    public void gameWon(String winnerName, Team team) {
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendTitle("§aTeam " + winnerName, "has won the game", 10, 70, 20);
+            player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            pause();
+        }
+
+    }
 
 
     public void pause() {
@@ -201,12 +285,10 @@ public class Game {
         isRunning = true;
     }
 
-    public void toggleContdown(){
-        if (isCountdown){
+    public void toggleContdown() {
+        if (isCountdown) {
             isCountdown = false;
-        }
-        else
-        {
+        } else {
             isCountdown = true;
         }
     }

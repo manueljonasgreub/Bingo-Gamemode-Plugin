@@ -16,4 +16,8 @@ import java.util.Map;
         public List<BingoItem> getItems() {
             return items;
         }
+
+        public void setItems(List<BingoItem> items) {
+            this.items = items;
+        }
     }

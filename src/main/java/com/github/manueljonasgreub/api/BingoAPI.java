@@ -92,9 +92,9 @@ public class BingoAPI {
         try {
             String apiUrl = API_BASE_URL + "/update/";
 
-
             JsonObject requestBody = new JsonObject();
-            requestBody.add("mapRAW", new Gson().toJsonTree(mapRAW));
+            requestBody.add("settings", new Gson().toJsonTree(mapRAW.getSettings()));
+            requestBody.add("items", new Gson().toJsonTree(mapRAW.getItems()));
 
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -104,7 +104,7 @@ public class BingoAPI {
             connection.setDoOutput(true);
 
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = mapRAW.toString().getBytes("utf-8");
+                byte[] input = requestBody.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
 

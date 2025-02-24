@@ -4,6 +4,7 @@ import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -103,6 +104,9 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
             case "start":
                 BingoMain.getInstance().getGame().startGame();
                 return true;
+            case "help":
+                sendHelp(player);
+                return true;
             default:
                 sendUsage(player);
                 return false;
@@ -115,19 +119,56 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (args.length == 1) {
-            return List.of("pause", "resume", "set", "toggle");
+            return List.of("help", "pause", "resume", "set", "start", "team", "toggle" );
         }
         if (args.length == 2 && args[0].equals("set")) {
             return List.of("<time>");
         }
+        if (args.length == 2 && args[0].equals("team")) {
+            return List.of("join", "leave", "list");
+        }
+        if (args.length == 3 && args[0].equals("team") && args[1].equals("join") || args[1].equals("leave")) {
+            List<Team> teams = BingoMain.getInstance().getGame().getTeams();
+            return teams.stream().map(team -> team.name).toList();
+        }
 
-        return null;
+        if (args.length == 4 && args[0].equals("team") && args[1].equals("join") || args[1].equals("leave")) {
+            return null;
+        }
+
+        return List.of("");
     }
 
-
-    public void sendUsage(Player player) {
+    public void sendUsage(Player player){
         player.sendMessage(Component
-                .text("Usage: /bingo <pause|resume|toggle> or /bingo set <time>")
+                .text("That didn't work. Try /bingo help")
                 .color(NamedTextColor.RED));
+    }
+
+    public void sendHelp(Player player) {
+        player.sendMessage(Component
+                .text("Usage: ")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo start - start the game")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo pause - pause the game")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo pause - resume the game after pause")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo toggle - toggles whether the timer counts up or down")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo set <time> - sets the timer to the given time")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo team <join|leave|list> - manage the teams")
+                .color(NamedTextColor.YELLOW));
+        player.sendMessage(Component
+                .text("    /bingo help - shows this list")
+                .color(NamedTextColor.YELLOW));
     }
 }

@@ -22,8 +22,7 @@ public class Team {
 
     public void markItemAsFound(BingoItem item, Team team){
 
-        BingoMain.getInstance().getGame().getMapRAW().getItems();
-        item.getCompleted().put(team.name, true);
+
 
     }
 

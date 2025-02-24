@@ -57,12 +57,9 @@ public class PlayerEventListener implements Listener {
         if (BingoMain.getInstance().getGame().isBingoItem(item)) {
 
             for(BingoItem foundItem : BingoMain.getInstance().getGame().getBingoItems()){
-                BingoMain.getInstance().getLogger().info("Teste: " + foundItem.getName() + " mit " + item.getType().name());
                 if (item.getType().name().toLowerCase().equals(foundItem.getName())) {
                     bingoItem = foundItem;
                     BingoMain.getInstance().getGame().playerFoundItem(player, bingoItem);
-                    player.sendMessage("§aYou found the item " + item.getType().name() + "!");
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
                 }
             }
         }

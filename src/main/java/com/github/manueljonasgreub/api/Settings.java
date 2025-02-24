@@ -6,18 +6,7 @@ import java.util.List;
 
 public class Settings {
     private int grid_size;
-    private String gamemode;
+    private String game_mode;
     private List<Team> teams;
 
-    public int getGrid_size() {
-        return grid_size;
-    }
-
-    public String getGamemode() {
-        return gamemode;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
 }
