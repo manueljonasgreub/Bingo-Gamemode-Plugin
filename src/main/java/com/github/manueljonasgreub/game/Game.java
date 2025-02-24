@@ -82,6 +82,23 @@ public class Game {
 
         try {
 
+            if (teams.stream().allMatch(team -> team.players.isEmpty())) {
+
+                List<Player> allPlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+                Collections.shuffle(allPlayers);
+
+
+                int teamIndex = 0;
+                for (Player player : allPlayers) {
+                    teams.get(teamIndex).addPlayer(player);
+                    teamIndex = (teamIndex + 1) % teams.size();
+                    player.sendMessage("§cNo teams were selected, so they were created randomly.");
+
+                }
+
+
+            }
+
             teams = teams.stream()
                     .filter(team -> !team.players.isEmpty())
                     .collect(Collectors.toList());

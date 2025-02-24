@@ -1,6 +1,7 @@
 package com.github.manueljonasgreub.commands;
 
 import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.inventory.ItemView;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -30,8 +31,18 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
         Player player = (Player) commandSender;
 
         if (args.length == 0) {
-            sendUsage(player);
-            return false;
+
+            if (!BingoMain.getInstance().getGame().isRunning()){
+                player.sendMessage(Component
+                        .text("You can't use this command if the game is not running.")
+                        .color(NamedTextColor.RED));
+                return false;
+            }
+
+            ItemView itemView = new ItemView();
+            itemView.ShowMenu(player);
+
+            return true;
         }
 
         switch (args[0]) {

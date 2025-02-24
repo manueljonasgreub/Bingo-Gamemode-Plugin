@@ -10,6 +10,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -66,6 +67,14 @@ public class PlayerEventListener implements Listener {
         else
         {
             player.sendMessage(item.getType().name() + " is not a bingo item");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(@NotNull InventoryClickEvent event) {
+
+        if(event.getView().getTitle().equals("Bingo Items")) {
+            event.setCancelled(true);
         }
     }
 }
