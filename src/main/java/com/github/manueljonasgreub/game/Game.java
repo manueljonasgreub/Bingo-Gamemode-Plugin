@@ -24,6 +24,7 @@ import org.bukkit.map.MapView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -70,6 +71,7 @@ public class Game {
 
                     if (time <= 0 && isCountdown) {
                         isRunning = false;
+                        determineWinner();
                     }
 
 
@@ -80,8 +82,11 @@ public class Game {
 
     public void startGame() {
 
-        try {
+        if (isCountdown){
+            time = 3600;
+        }
 
+        try {
             if (teams.stream().allMatch(team -> team.players.isEmpty())) {
 
                 List<Player> allPlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -275,6 +280,31 @@ public class Game {
                     }
                 }
             }
+        }
+    }
+
+    private void determineWinner() {
+        Team winningTeam = null;
+        int maxItemsFound = 0;
+
+        for (Team team : teams) {
+            int itemsFound = (int) bingoItems.stream()
+                    .filter(item -> item.getCompleted().getOrDefault(team.name, false))
+                    .count();
+
+            if (itemsFound > maxItemsFound) {
+                maxItemsFound = itemsFound;
+                winningTeam = team;
+            }
+        }
+
+        if (winningTeam != null) {
+            gameWon(winningTeam.name, winningTeam);
+        } else {
+            Random random = new Random();
+            int index = random.nextInt(teams.size());
+            Team randomTeam = teams.get(index);
+            gameWon(randomTeam.name, randomTeam);
         }
     }
 

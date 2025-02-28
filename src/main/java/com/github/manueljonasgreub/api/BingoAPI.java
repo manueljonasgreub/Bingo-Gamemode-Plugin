@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class BingoAPI {
 
-    private final String API_BASE_URL = "http://167.99.130.136";
+    private final String API_BASE_URL = BingoMain.getInstance().getApiBaseUrl();
     private List<BingoItem> bingoItems;
 
     public BingoAPIResponse fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String difficulty, List<Team> teams) {

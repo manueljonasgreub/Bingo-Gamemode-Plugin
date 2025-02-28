@@ -55,6 +55,8 @@ public class PlayerEventListener implements Listener {
         ItemStack item = event.getItem().getItemStack();
         BingoItem bingoItem;
 
+        if (!BingoMain.getInstance().getGame().isRunning()) return;
+
         if (BingoMain.getInstance().getGame().isBingoItem(item)) {
 
             for(BingoItem foundItem : BingoMain.getInstance().getGame().getBingoItems()){
@@ -64,10 +66,7 @@ public class PlayerEventListener implements Listener {
                 }
             }
         }
-        else
-        {
-            player.sendMessage(item.getType().name() + " is not a bingo item");
-        }
+
     }
 
     @EventHandler

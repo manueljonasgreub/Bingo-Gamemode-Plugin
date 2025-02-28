@@ -28,7 +28,7 @@ public class ItemView {
             Material material = Material.matchMaterial(item.getName().toUpperCase());
             ItemStack itemStack;
 
-            if (material != null) {
+            if (material != null && material.isItem()) {
                 itemStack = new ItemStack(material);
             }
             else{
