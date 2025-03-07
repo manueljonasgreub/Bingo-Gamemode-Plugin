@@ -85,31 +85,60 @@ Ursprünglich war es im Projektantrag geplant, dass wir nicht nur ein Bingo für
 
 ## 4 Realisieren
 
-| AP-№ | Datum | Zuständig | geplante Zeit | tatsächliche Zeit |
-| ---- | ----- | --------- | ------------- | ----------------- |
-| 1.A  |       |           |               |                   |
-| ...  |       |           |               |                   |
+| AP-№  | Datum     | Zuständig         | geplante Zeit | tatsächliche Zeit |
+|------ |----------|------------------|--------------|------------------|
+| 0.A   | 17.01.25 | Manuel Greub      | 30           | 35               |
+| 0.B   | 17.01.25 | Marek von Rogall  | 120          | 110              |
+| 1.A   | 17.01.25 | Manuel Greub      | 60           | 65               |
+| 1.B   | 17.01.25 | Manuel Greub      | 10           | 12               |
+| 1.C   | 17.01.25 | Manuel Greub      | 10           | 9                |
+| 2.A   | 24.01.25 | Manuel Greub      | 100          | 95               |
+| 2.B   | 24.01.25 | Manuel Greub      | 40           | 45               |
+| 2.C   | 31.01.25 | Manuel Greub      | 50           | 55               |
+| 3.A   | 31.01.25 | Manuel Greub      | 120          | 115              |
+| 3.B   | 31.01.25 | Marek von Rogall  | 240          | 250              |
+| 3.C   | 14.02.25 | Marek von Rogall  | 300          | 290              |
+| 4.A   | 21.02.25 | Manuel Greub      | 180          | 185              |
+| 4.B   | 21.02.25 | Manuel Greub      | 60           | 55               |
+| 4.C   | 07.03.25 | Manuel Greub      | 50           | 52               |
+| 4.D   | 21.02.25 | Manuel Greub      | 120          | 125              |
+| 4.E   | 21.02.25 | Marek von Rogall  | 240          | 235              |
+| 5.A   | 21.02.25 | Manuel Greub      | 60           | 58               |
+| 5.B   | 21.02.25 | Marek von Rogall  | 240          | 245              |
+| 6.A   | 28.02.25 | Manuel Greub      | 40           | 38               |
+| 6.B   | 17.01.25 | Manuel Greub      | 20           | 22               |
+| 6.C   | 28.02.25 | Manuel Greub      | 20           | 18               |
+| 7.A   | 28.02.25 | Manuel Greub      | 60           | 62               |
+| 7.B   | 28.02.25 | Manuel Greub      | 20           | 19               |
+| 8.A   | 28.02.25 | Manuel Greub      | 60           | 63               |
+| 11.A  | 28.02.25 | Marek von Rogall  | 120          | 115              |
+| 12.A  | 28.02.25 | Marek von Rogall  | 120          | 125              |
+
 
 
 
 ## 5 Kontrollieren
 
-| TC-№ | Datum   | Resultat | Tester |
-| ---- | ------- | -------- | ------ |
-| 1.1  | 07.03.25 | OK       | Greub  |
-| 1.2  | 07.03.25 | OK       | Greub  |
-| 2.1  | 07.03.25 | OK       | Greub  |
-| 2.2  | 07.03.25 | OK       | Greub  |
-| 3.1  | 07.03.25 | OK       | Greub  |
-| 3.2  | 07.03.25 | OK       | Greub  |
-| 4.1  | 07.03.25 | OK       | Greub  |
-| 5.1  | 07.03.25 | OK       | Greub  |
-| 6.1  | 07.03.25 | OK       | Greub  |
-| 6.2  | 07.03.25 | OK       | Greub  |
-| 6.3  | 07.03.25 | OK       | Greub  |
-| 6.4  | 07.03.25 | OK       | Greub  |
-| 7.1  | 07.03.25 | OK       | Greub  |
-| 8.1  | 07.03.25 | OK       | Greub  |
+| TC-№  | Datum    | Resultat | Tester  |
+|------ |---------|----------|---------|
+| 1.1   | 07.03.25 | OK       | Greub   |
+| 1.2   | 07.03.25 | OK       | Greub   |
+| 2.1   | 07.03.25 | OK       | Greub   |
+| 2.2   | 07.03.25 | OK       | Greub   |
+| 3.1   | 07.03.25 | OK       | Greub   |
+| 3.2   | 07.03.25 | OK       | Greub   |
+| 4.1   | 07.03.25 | OK       | Greub   |
+| 5.1   | 07.03.25 | OK       | Greub   |
+| 6.1   | 07.03.25 | OK       | Greub   |
+| 6.2   | 07.03.25 | OK       | Greub   |
+| 6.3   | 07.03.25 | OK       | Greub   |
+| 6.4   | 07.03.25 | OK       | Greub   |
+| 7.1   | 07.03.25 | OK       | Greub   |
+| 8.1   | 07.03.25 | OK       | Greub   |
+| 11.1  | 07.03.25 | OK       | von Rogall  |
+| 11.2  | 07.03.25 | OK       | von Rogall  |
+| 12.1  | 07.03.25 | OK       | von Rogall  |
+
 
 Alle Testfälle konnten ohne Probleme durchgeführt werden.
 
