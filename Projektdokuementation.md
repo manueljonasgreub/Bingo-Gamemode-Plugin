@@ -19,8 +19,9 @@ In unserem Projekt möchten wir ein Minecraft Plugin erstellen, mit dem es mögl
 | 7  |    Muss             |  Funktional    |    Als Spieler möchte ich, dass ich die Welt zurücksetzen kann, um auf einer neuen Welt eine neue Runde Bingo zu spielen.   |
 | 8  |    Muss             |  Funktional    |    Als Server-Admin möchte ich, dass ich die Adresse des externen Services konfigurieren kann, damit ich diesen auch selber hosten könnte.   |
 | 9  |    Muss             |  Rand    |  Als ein Developer möchte ich, dass das Plugin in zwei aufgeteilt wird, damit der Teil der auf dem Minecraft Server läuft, performanter ist.     |
-| 10 |    Muss             |  Rand    |  Als ein Developer möchte ich, dass das Minecraft Plugin in Java und der externe Service in C# umgesetzt wird.     |
-
+| 10 |    Muss             |  Rand    |  Als ein Developer möchte ich, dass das Minecraft Plugin in Java und der externe Service in C# & Python umgesetzt wird.     |
+| 11 |    Muss             |  Funktional    |  Als Entwickler möchte ich, dass die Item-Generation der Bingokarte durch einen eingebenen Schwierigkeitsgrad verändert werden kann.     |
+| 12 |    Muss             |  Funktional    |  Als Entwickler möchte ich, dass die Items in der Mitte der Bingokarte schwerer sind, als die weiter aussen auf der Bingokarte.     |
 
 ### 1.3 Testfälle
 
@@ -40,7 +41,9 @@ In unserem Projekt möchten wir ein Minecraft Plugin erstellen, mit dem es mögl
 | 6.4  |  Plugin aktiviert |  /bingo help  |  "Verfügbare Commands: /bingo <start|stop|resume|set|team|url|reset>"  |
 | 7.1  |  Plugin aktiviert |  /bingo reset  |  "Die Welt wurde zurückgesetzt"  |
 | 8.1  |  Plugin aktiviert |  /bingo url https://www.meinlustigerserver.ch/bingo  |  "Die Serveradresse wurde auf "https://www.meinlustigerserver.ch/bingo" gesetzt.  |
-
+| 11.1  |  Bingo Backend gestartet |  Anfrage an /create endpoint des Backends mit "difficulty" auf "easy"  |  Das generierte Bingoboard ist mit einfachen Gegenständen versehen.  |
+| 11.2  |  Bingo Backend gestartet |  Anfrage an /create endpoint des Backends mit "difficulty" auf "hard"  |  Das generierte Bingoboard ist mit schweren Gegenständen versehen.  |
+| 12.1  |  Bingo Backend gestartet |  Anfrage an /create endpoint des Backends  |  Das generierte Bingoboard ist mit schweren Gegenständen in der Mitte und einfachen Gegenständen aussen versehen.  |
 
 
 ## 2 Planen
@@ -48,6 +51,7 @@ In unserem Projekt möchten wir ein Minecraft Plugin erstellen, mit dem es mögl
 | AP-№ | Frist | Zuständig | Beschreibung | geplante Zeit (min) |
 | ---- | ----- | --------- | ------------ | ------------- |
 | 0.A  | 17.01.25 | Manuel Greub | Plugin aufsetzen | 30 |
+| 0.B  | 17.01.25 | Marek von Rogall | Server aufsetzen | 120 |
 | 1.A  | 17.01.25 | Manuel Greub | Es gibt einen Timer der hochzählt | 60 |
 | 1.B  | 17.01.25 | Manuel Greub | Der Timer ist standardmässig pausiert | 10 |
 | 1.C  | 17.01.25 | Manuel Greub | Der Timer kann mit /bingo start gestartet werden | 10 |
@@ -55,17 +59,23 @@ In unserem Projekt möchten wir ein Minecraft Plugin erstellen, mit dem es mögl
 | 2.B  | 24.01.25 | Manuel Greub | Teams können über /bingo team verwaltet werden | 40 |
 | 2.C  | 31.01.25 | Manuel Greub | Wenn ein Team ein Item einsammelt, wird es für das ganze Team erledigt | 50 |
 | 3.A  | 31.01.25 | Manuel Greub | Der Spieler kann mit dem Befehl /bingo eine Übersicht mit allen Items anzeigen lassen | 120 |
+| 3.B  | 31.01.25 | Marek von Rogall | Ein Bingoboard wird generiert und als JSON wiedergegeben | 240 |
+| 3.C  | 14.02.25 | Marek von Rogall | Ein Bild des Bingoboards wird generiert und das Bild unter einer URL bereitgestellt. | 300 |
 | 4.A  | 21.02.25 | Manuel Greub | Das Plugin nimmt eine Liste mit Items vom Server entgegen. | 180 |
 | 4.B  | 21.02.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Liste an den Server gesendet | 60 |
 | 4.C  | 07.03.25 | Manuel Greub | Das Bild mit allen Items wird Ingame angezeigt  | 50 |
 | 4.D  | 21.02.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Karte allen Spielern angezeigt | 120 |
+| 4.E  | 21.02.25 | Marek von Rogall | Item/Block detection und einzeichnen eines Rahmen des gefundenen Items | 240 |
 | 5.A  | 21.02.25 | Manuel Greub | Das Plugin zeigt an, wenn ein Team alles gefunden hat und zeigt den Gewinner an. | 60 |
+| 5.B  | 21.02.25 | Marek von Rogall | Bingo detection und einzeichnen einer Bingo Linie | 240 |
 | 6.A  | 28.02.25 | Manuel Greub | Implementierung von /bingo toggle | 40 |
 | 6.B  | 17.01.25 | Manuel Greub | Implementierung von /bingo set | 20 |
 | 6.C  | 28.02.25 | Manuel Greub | Implementierung von /bingo help | 20 |
 | 7.A  | 28.02.25 | Manuel Greub | Welt kann zurückgesetzt werden | 60 |
 | 7.B  | 28.02.25 | Manuel Greub | Die Welt kann über /bingo reset zurückgesetzt werden | 20 |
 | 8.A  | 28.02.25 | Manuel Greub | Die Backend Adresse kann über /bingo url verändert werden | 60 |
+| 11.A  | 28.02.25 | Marek von Rogall | Die Item-Generation wird vom Schwierigkeitsparameter beinflusst | 120 |
+| 12.A  | 28.02.25 | Marek von Rogall | Die Item-Platzierung während der Generation ist aufgeteilt in: Schwierige Items innen, leichtere aussen auf dem Bingoboard. | 120 |
 
 
 
