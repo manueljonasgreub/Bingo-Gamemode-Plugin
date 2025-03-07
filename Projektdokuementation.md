@@ -145,4 +145,5 @@ Alle Testfälle konnten ohne Probleme durchgeführt werden.
 ## 6 Auswerten
 
 [Portfolio von Manuel Greub](https://portfolio.bbbaden.ch/view/view.php?t=cbd9d233fbd20ef6c22a)
+[Portfolio von Marek von Rogall](https://portfolio.bbbaden.ch/view/view.php?t=fed7525bd8ccf72737f1)
 
