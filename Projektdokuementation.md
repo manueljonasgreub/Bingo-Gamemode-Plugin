@@ -47,27 +47,26 @@ In unserem Projekt möchten wir ein Minecraft Plugin erstellen, mit dem es mögl
 
 | AP-№ | Frist | Zuständig | Beschreibung | geplante Zeit (min) |
 | ---- | ----- | --------- | ------------ | ------------- |
-| 0.A  | 07.03.25 | Manuel Greub | Plugin aufsetzen | 30 |
-| 1.A  | 07.03.25 | Manuel Greub | Es gibt einen Timer der hochzählt | 60 |
-| 1.B  | 07.03.25 | Manuel Greub | Der Timer ist standardmässig pausiert | 10 |
-| 1.C  | 07.03.25 | Manuel Greub | Der Timer kann mit /bingo start gestartet werden | 10 |
-| 2.A  | 07.03.25 | Manuel Greub | Es gibt verschiedene Teams, die eine Liste von Spielern beinhalten | 100 |
-| 2.B  | 07.03.25 | Manuel Greub | Teams können über /bingo team verwaltet werden | 40 |
-| 2.C  | 07.03.25 | Manuel Greub | Wenn ein Team ein Item einsammelt, wird es für das ganze Team erledigt | 50 |
-| 3.A  | 07.03.25 | Manuel Greub | Der Spieler kann mit dem Befehl /bingo eine Übersicht mit allen Items anzeigen lassen | 120 |
-| 4.A  | 07.03.25 | Manuel Greub | Das Plugin nimmt eine Liste mit Items vom Server entgegen. | 180 |
-| 4.B  | 07.03.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Liste an den Server gesendet | 60 |
+| 0.A  | 17.01.25 | Manuel Greub | Plugin aufsetzen | 30 |
+| 1.A  | 17.01.25 | Manuel Greub | Es gibt einen Timer der hochzählt | 60 |
+| 1.B  | 17.01.25 | Manuel Greub | Der Timer ist standardmässig pausiert | 10 |
+| 1.C  | 17.01.25 | Manuel Greub | Der Timer kann mit /bingo start gestartet werden | 10 |
+| 2.A  | 24.01.25 | Manuel Greub | Es gibt verschiedene Teams, die eine Liste von Spielern beinhalten | 100 |
+| 2.B  | 24.01.25 | Manuel Greub | Teams können über /bingo team verwaltet werden | 40 |
+| 2.C  | 31.01.25 | Manuel Greub | Wenn ein Team ein Item einsammelt, wird es für das ganze Team erledigt | 50 |
+| 3.A  | 31.01.25 | Manuel Greub | Der Spieler kann mit dem Befehl /bingo eine Übersicht mit allen Items anzeigen lassen | 120 |
+| 4.A  | 21.02.25 | Manuel Greub | Das Plugin nimmt eine Liste mit Items vom Server entgegen. | 180 |
+| 4.B  | 21.02.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Liste an den Server gesendet | 60 |
 | 4.C  | 07.03.25 | Manuel Greub | Das Bild mit allen Items wird Ingame angezeigt  | 50 |
-| 4.D  | 07.03.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Karte allen Spielern angezeigt | 120 |
-| 5.A  | 07.03.25 | Manuel Greub | Das Plugin zeigt an, wenn ein Team alles gefunden hat und zeigt den Gewinner an. | 60 |
-| 6.A  | 07.03.25 | Manuel Greub | Implementierung von /bingo toggle | 40 |
-| 6.B  | 07.03.25 | Manuel Greub | Implementierung von /bingo set | 20 |
-| 6.C  | 07.03.25 | Manuel Greub | Implementierung von /bingo help | 20 |
-| 7.A  | 07.03.25 | Manuel Greub | Welt kann zurückgesetzt werden | 60 |
-| 7.B  | 07.03.25 | Manuel Greub | Die Welt kann über /bingo reset zurückgesetzt werden | 20 |
-| 8.A  | 07.03.25 | Manuel Greub | Die Backend Adresse kann über /bingo url verändert werden | 60 |
+| 4.D  | 21.02.25 | Manuel Greub | Wenn ein Spieler ein Item einsammelt, wird die aktualisierte Karte allen Spielern angezeigt | 120 |
+| 5.A  | 21.02.25 | Manuel Greub | Das Plugin zeigt an, wenn ein Team alles gefunden hat und zeigt den Gewinner an. | 60 |
+| 6.A  | 28.02.25 | Manuel Greub | Implementierung von /bingo toggle | 40 |
+| 6.B  | 17.01.25 | Manuel Greub | Implementierung von /bingo set | 20 |
+| 6.C  | 28.02.25 | Manuel Greub | Implementierung von /bingo help | 20 |
+| 7.A  | 28.02.25 | Manuel Greub | Welt kann zurückgesetzt werden | 60 |
+| 7.B  | 28.02.25 | Manuel Greub | Die Welt kann über /bingo reset zurückgesetzt werden | 20 |
+| 8.A  | 28.02.25 | Manuel Greub | Die Backend Adresse kann über /bingo url verändert werden | 60 |
 
-Total: 
 
 
 ## 3 Entscheiden
