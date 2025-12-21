@@ -6,6 +6,7 @@ import com.github.manueljonasgreub.api.BingoAPIResponse;
 import com.github.manueljonasgreub.api.BingoAPIUpdateResponse;
 import com.github.manueljonasgreub.api.MapRAW;
 import com.github.manueljonasgreub.item.BingoItem;
+import com.github.manueljonasgreub.item.BingoItemDTO;
 import com.github.manueljonasgreub.map.BingoMapRenderer;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
@@ -32,17 +33,17 @@ public class Game {
     private boolean isRunning = false;
     private boolean isCountdown = false;
     private int time = 0;
-    private List<BingoItem> bingoItems;
+    private List<BingoItemDTO> bingoItems;
     private List<Team> teams;
 
     private MapRAW mapRAW;
 
 
-    public List<BingoItem> getBingoItems() {
+    public List<BingoItemDTO> getBingoItems() {
         return bingoItems;
     }
 
-    public void setBingoItems(List<BingoItem> bingoItems) {
+    public void setBingoItems(List<BingoItemDTO> bingoItems) {
         this.bingoItems = bingoItems;
     }
 
@@ -200,21 +201,21 @@ public class Game {
 
     public boolean isBingoItem(ItemStack item) {
 
-        for (BingoItem bingoItem : bingoItems) {
-            if (bingoItem.getName().equals(item.getType().name().toLowerCase())) {
+        for (BingoItemDTO bingoItem : bingoItems) {
+            if (bingoItem.getId().equals(item.getType().name().toLowerCase())) {
                 return true;
             }
         }
         return false;
     }
 
-    public void playerFoundItem(Player player, BingoItem item) {
+    public void playerFoundItem(Player player, BingoItemDTO item) {
         for (Team team : teams) {
             if (team.players.contains(player)) {
                 if (item.getCompleted().get(team.name)) {
                 } else {
 
-                    for (BingoItem bingoItem : bingoItems) {
+                    for (BingoItemDTO bingoItem : bingoItems) {
                         if (bingoItem.getName().equals(item.getName())) {
                             bingoItem.getCompleted().put(team.name, true);
                         }

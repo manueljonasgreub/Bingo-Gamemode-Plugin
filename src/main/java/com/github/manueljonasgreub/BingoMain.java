@@ -28,7 +28,7 @@ public final class BingoMain extends JavaPlugin {
         }
 
         if (!getConfig().contains("api-base-url")) {
-            getConfig().set("api-base-url", "http://167.99.130.136");
+            getConfig().set("api-base-url", "http://api.vrmarek.me");
             saveConfig();
         }
 

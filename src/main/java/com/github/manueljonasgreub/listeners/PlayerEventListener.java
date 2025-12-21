@@ -2,6 +2,7 @@ package com.github.manueljonasgreub.listeners;
 
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.item.BingoItem;
+import com.github.manueljonasgreub.item.BingoItemDTO;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -53,14 +54,14 @@ public class PlayerEventListener implements Listener {
     public void onPlayerAttemptPickupItem(@NotNull PlayerAttemptPickupItemEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem().getItemStack();
-        BingoItem bingoItem;
+        BingoItemDTO bingoItem;
 
         if (!BingoMain.getInstance().getGame().isRunning()) return;
 
         if (BingoMain.getInstance().getGame().isBingoItem(item)) {
 
-            for(BingoItem foundItem : BingoMain.getInstance().getGame().getBingoItems()){
-                if (item.getType().name().toLowerCase().equals(foundItem.getName())) {
+            for(BingoItemDTO foundItem : BingoMain.getInstance().getGame().getBingoItems()){
+                if (item.getType().name().toLowerCase().equals(foundItem.getId())) {
                     bingoItem = foundItem;
                     BingoMain.getInstance().getGame().playerFoundItem(player, bingoItem);
                 }

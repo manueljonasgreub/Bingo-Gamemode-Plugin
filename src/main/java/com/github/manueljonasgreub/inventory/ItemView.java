@@ -2,6 +2,7 @@ package com.github.manueljonasgreub.inventory;
 
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.item.BingoItem;
+import com.github.manueljonasgreub.item.BingoItemDTO;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,14 +19,14 @@ public class ItemView {
 
     public void ShowMenu(Player player) {
 
-        List<BingoItem> items = BingoMain.getInstance().getGame().getBingoItems();
+        List<BingoItemDTO> items = BingoMain.getInstance().getGame().getBingoItems();
         Inventory inventory = Bukkit.createInventory(player, 54, "Bingo Items");
 
         int[] slots = {2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24, 29, 30, 31, 32, 33, 38, 39, 40, 41, 42};
 
         for (int i = 0; i < items.size(); i++) {
-            BingoItem item = items.get(i);
-            Material material = Material.matchMaterial(item.getName().toUpperCase());
+            BingoItemDTO item = items.get(i);
+            Material material = Material.matchMaterial(item.getId().toUpperCase());
             ItemStack itemStack;
 
             if (material != null && material.isItem()) {

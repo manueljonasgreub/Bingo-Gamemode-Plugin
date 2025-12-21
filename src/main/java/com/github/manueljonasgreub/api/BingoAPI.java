@@ -2,6 +2,7 @@ package com.github.manueljonasgreub.api;
 
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.item.BingoItem;
+import com.github.manueljonasgreub.item.BingoItemDTO;
 import com.github.manueljonasgreub.team.Team;
 import com.google.gson.*;
 import org.bukkit.Material;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class BingoAPI {
 
     private final String API_BASE_URL = BingoMain.getInstance().getApiBaseUrl();
-    private List<BingoItem> bingoItems;
+    private List<BingoItemDTO> bingoItems;
 
     public BingoAPIResponse fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String difficulty, List<Team> teams) {
         try {
