@@ -20,11 +20,6 @@ public class Team {
         this.players = new ArrayList<>();
     }
 
-    public void markItemAsFound(BingoItem item, Team team){
-
-
-
-    }
 
     public void addPlayer(Player player){
         if(!(players.contains(player))){
@@ -37,7 +32,6 @@ public class Team {
         if(players.contains(player)){
             players.remove(player);
         }
-
     }
 
     public void setPlacement(String placement) {

@@ -3,13 +3,16 @@ package com.github.manueljonasgreub.inventory;
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.item.BingoItem;
 import com.github.manueljonasgreub.item.BingoItemDTO;
+import com.github.manueljonasgreub.utils.Difficulty;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -24,13 +27,41 @@ public class ItemView {
 
         int[] slots = {2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24, 29, 30, 31, 32, 33, 38, 39, 40, 41, 42};
 
+        ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) {
+            fillerMeta.displayName(Component.empty());
+            fillerMeta.setHideTooltip(true);
+            filler.setItemMeta(fillerMeta);
+        }
+
+        for (int i = 0; i < inventory.getSize(); i++) {
+            inventory.setItem(i, filler);
+        }
+
         for (int i = 0; i < items.size(); i++) {
             BingoItemDTO item = items.get(i);
+            String itemDiff = item.getDifficulty();
             Material material = Material.matchMaterial(item.getId().toUpperCase());
             ItemStack itemStack;
 
             if (material != null && material.isItem()) {
                 itemStack = new ItemStack(material);
+                ItemMeta itemMeta = itemStack.getItemMeta();
+
+                ChatColor color = switch (itemDiff) {
+                    case "very easy" -> ChatColor.AQUA;
+                    case "easy" -> ChatColor.GREEN;
+                    case "medium" -> ChatColor.YELLOW;
+                    case "hard" -> ChatColor.GOLD;
+                    case "very hard" -> ChatColor.RED;
+                    default -> ChatColor.WHITE;
+                };
+
+                itemMeta.displayName(Component.text(color + item.getName()));
+
+                System.out.println(item.getName() + " - " + itemDiff);
+                itemStack.setItemMeta(itemMeta);
             }
             else{
                 itemStack = new ItemStack(Material.BARRIER);

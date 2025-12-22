@@ -1,7 +1,9 @@
 package com.github.manueljonasgreub.commands;
 
 import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.api.Settings;
 import com.github.manueljonasgreub.inventory.ItemView;
+import com.github.manueljonasgreub.inventory.SettingsView;
 import com.github.manueljonasgreub.team.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -34,11 +36,11 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
         if (args.length == 0) {
 
             if (!BingoMain.getInstance().getGame().isRunning()){
-                player.sendMessage(Component
-                        .text("You can't use this command if the game is not running.")
-                        .color(NamedTextColor.RED));
-                return false;
+                SettingsView sv = new SettingsView();
+                sv.openGUI(player);
+                return true;
             }
+
 
             ItemView itemView = new ItemView();
             itemView.ShowMenu(player);
@@ -50,6 +52,15 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
 
             case "resume":
                 BingoMain.getInstance().getGame().resume();
+                return true;
+
+            case "stop":
+                BingoMain.getInstance().getGame().DetermineWinner();
+                return true;
+
+            case "settings":
+                SettingsView sv = new SettingsView();
+                sv.openGUI(player);
                 return true;
 
             case "set":
@@ -145,9 +156,6 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 BingoMain.getInstance().getGame().pause();
                 return true;
 
-            case "toggle":
-                BingoMain.getInstance().getGame().toggleContdown();
-                return true;
             case "start":
                 BingoMain.getInstance().getGame().startGame();
                 return true;
@@ -166,7 +174,7 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (args.length == 1) {
-            return List.of("help", "pause", "reset", "resume", "set", "start", "team", "toggle", "url");
+            return List.of("help", "pause", "reset", "resume", "set", "settings", "start", "stop", "team", "url");
         }
         if (args.length == 2 && args[0].equals("set")) {
             return List.of("<time>");

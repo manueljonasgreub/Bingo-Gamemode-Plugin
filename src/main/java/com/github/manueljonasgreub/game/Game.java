@@ -9,6 +9,8 @@ import com.github.manueljonasgreub.item.BingoItem;
 import com.github.manueljonasgreub.item.BingoItemDTO;
 import com.github.manueljonasgreub.map.BingoMapRenderer;
 import com.github.manueljonasgreub.team.Team;
+import com.github.manueljonasgreub.utils.Difficulty;
+import com.github.manueljonasgreub.utils.PlacementMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -22,20 +24,31 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
 
     private boolean isRunning = false;
+
+    public boolean isCountdown() {
+        return isCountdown;
+    }
+
+    public EnumMap<Difficulty, Boolean> difficulties =
+            new EnumMap<>(Difficulty.class);
+    public PlacementMode placementMode = PlacementMode.CIRCLES;
     private boolean isCountdown = false;
     private int time = 0;
+    public int getStartTime() {
+        return startTime;
+    }
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+    private int startTime = 3600;
     private List<BingoItemDTO> bingoItems;
     private List<Team> teams;
-
     private MapRAW mapRAW;
 
 
@@ -55,6 +68,10 @@ public class Game {
         teams.add(new Team("3"));
         teams.add(new Team("4"));
 
+        for (Difficulty d : Difficulty.values()) {
+            difficulties.put(d, true);
+        }
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(BingoMain.getInstance(),
                 () -> {
 
@@ -72,7 +89,7 @@ public class Game {
 
                     if (time <= 0 && isCountdown) {
                         isRunning = false;
-                        determineWinner();
+                        DetermineWinner();
                     }
 
 
@@ -84,7 +101,10 @@ public class Game {
     public void startGame() {
 
         if (isCountdown){
-            time = 3600;
+            time = startTime;
+        }
+        else{
+            time = 0;
         }
 
         try {
@@ -98,16 +118,12 @@ public class Game {
                 for (Player player : allPlayers) {
                     teams.get(teamIndex).addPlayer(player);
                     teamIndex = (teamIndex + 1) % teams.size();
-                    player.sendMessage("§cNo teams were selected, so they were created randomly.");
+                    player.sendMessage("§eNo teams were selected, so they were created randomly.");
 
                 }
 
 
             }
-
-            teams = teams.stream()
-                    .filter(team -> !team.players.isEmpty())
-                    .collect(Collectors.toList());
 
             List<String> teamNames = teams.stream()
                     .map(team -> team.name)
@@ -117,7 +133,7 @@ public class Game {
 
 
             BingoAPI api = new BingoAPI();
-            BingoAPIResponse apiResponse = api.fetchBingoItems(5, teams.size() + "P", teamNamesArray, "easy", teams);
+            BingoAPIResponse apiResponse = api.fetchBingoItems(5, teams.size() + "P", teamNamesArray, getDifficultiesAsCsv(), teams, placementMode);
             mapRAW = apiResponse.getMapRAW();
             bingoItems = apiResponse.getMapRAW().getItems();
             String mapURL = apiResponse.getMapURL();
@@ -284,7 +300,7 @@ public class Game {
         }
     }
 
-    private void determineWinner() {
+    public void DetermineWinner() {
         Team winningTeam = null;
         int maxItemsFound = 0;
 
@@ -364,5 +380,16 @@ public class Game {
     public void setMapRAW(MapRAW mapRAW) {
         this.mapRAW = mapRAW;
     }
+
+    public String getDifficultiesAsCsv(){
+        return difficulties.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(e -> e.getKey().name()
+                        .toLowerCase()
+                        .replace("_", " "))
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+    }
+
 }
 
