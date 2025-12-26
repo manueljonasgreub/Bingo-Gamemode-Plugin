@@ -80,11 +80,11 @@ public class BingoAPI {
 
 
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            JsonObject mapRAWJson = jsonResponse.getAsJsonObject("mapRAW");
+            JsonObject mapRAWJson = jsonResponse.getAsJsonObject("map_raw");
 
             Gson gson = new Gson();
             MapRAW mapRAW = gson.fromJson(mapRAWJson, MapRAW.class);
-            String mapURL = jsonResponse.get("mapURL").getAsString();
+            String mapURL = jsonResponse.get("map_url").getAsString();
 
             for (JsonElement teamJson : mapRAWJson.getAsJsonObject("settings").getAsJsonArray("teams")) {
                 String teamName = teamJson.getAsJsonObject().get("name").getAsString();
@@ -203,7 +203,7 @@ public class BingoAPI {
             }
 
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            JsonObject mapRAW = jsonResponse.getAsJsonObject("mapRAW");
+            JsonObject mapRAW = jsonResponse.getAsJsonObject("map_raw");
             JsonArray items = mapRAW.getAsJsonArray("items");
 
             int expected = gridSize * gridSize;

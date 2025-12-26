@@ -37,7 +37,7 @@ public class Game {
 
     public EnumMap<Difficulty, Boolean> difficulties =
             new EnumMap<>(Difficulty.class);
-    public PlacementMode placementMode = PlacementMode.CIRCLES;
+    public PlacementMode placementMode = PlacementMode.CIRCULAR;
     private boolean isCountdown = false;
     private int time = 0;
     public int getStartTime() {
