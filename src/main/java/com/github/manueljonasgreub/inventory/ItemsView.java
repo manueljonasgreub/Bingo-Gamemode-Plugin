@@ -110,7 +110,7 @@ public class ItemsView implements Listener {
 
         BingoAPI b = new BingoAPI();
 
-        List<ItemStack> previewItems = b.fetchTestItems(5, game.getDifficultiesAsCsv(), game.placementMode);
+        List<ItemStack> previewItems = b.fetchTestItems(5, game.getDifficultiesAsArray(), game.placementMode);
 
         for (int i = 0; i < previewItems.size(); i++) {
             ItemStack item = previewItems.get(i);

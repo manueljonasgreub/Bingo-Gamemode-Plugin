@@ -3,6 +3,7 @@ package com.github.manueljonasgreub.inventory;
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.game.Game;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -88,7 +89,7 @@ public class SettingsView implements Listener {
     private void setStartItem(Inventory inv) {
         ItemStack item = new ItemStack(Material.NETHER_STAR);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.AQUA + "Start Game");
+        meta.displayName(Component.text("Start Game", NamedTextColor.AQUA));
         meta.lore(List.of(
                 Component.text(ChatColor.GRAY + ""),
                 Component.text(ChatColor.GRAY + "Click to start the Bingo game.")
@@ -110,6 +111,7 @@ public class SettingsView implements Listener {
         item.setItemMeta(meta);
         inv.setItem(12, item);
     }
+
 
     private void setTimeItem(Inventory inv) {
 
@@ -214,6 +216,7 @@ public class SettingsView implements Listener {
         setTimeItem(inv);
 
     }
+
 
     private void handleCountdownClick(Player player, ClickType clickType) {
         if(clickType.isLeftClick()){

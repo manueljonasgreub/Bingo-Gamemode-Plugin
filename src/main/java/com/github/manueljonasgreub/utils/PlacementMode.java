@@ -2,7 +2,7 @@ package com.github.manueljonasgreub.utils;
 
 public enum PlacementMode {
 
-    CIRCLES,
+    CIRCULAR,
     FLIPPED,
     RANDOM;
 

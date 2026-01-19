@@ -37,8 +37,18 @@ public class Game {
 
     public EnumMap<Difficulty, Boolean> difficulties =
             new EnumMap<>(Difficulty.class);
-    public PlacementMode placementMode = PlacementMode.CIRCLES;
+    public PlacementMode placementMode = PlacementMode.CIRCULAR;
     private boolean isCountdown = false;
+
+    public boolean isShowingTimer() {
+        return isShowingTimer;
+    }
+
+    public void setShowingTimer(boolean showingTimer) {
+        isShowingTimer = showingTimer;
+    }
+
+    private boolean isShowingTimer = true;
     private int time = 0;
     public int getStartTime() {
         return startTime;
@@ -75,7 +85,7 @@ public class Game {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(BingoMain.getInstance(),
                 () -> {
 
-                    printTime();
+                    if(isShowingTimer) printTime();
 
                     if (!isRunning) {
                         return;
@@ -133,7 +143,7 @@ public class Game {
 
 
             BingoAPI api = new BingoAPI();
-            BingoAPIResponse apiResponse = api.fetchBingoItems(5, teams.size() + "P", teamNamesArray, getDifficultiesAsCsv(), teams, placementMode);
+            BingoAPIResponse apiResponse = api.fetchBingoItems(5, teams.size() + "P", teamNamesArray, getDifficultiesAsArray(), teams, placementMode);
             mapRAW = apiResponse.getMapRAW();
             bingoItems = apiResponse.getMapRAW().getItems();
             String mapURL = apiResponse.getMapURL();
@@ -202,9 +212,9 @@ public class Game {
             } else {
 
                 message = Component
-                        .text("Timer pausiert")
+                        .text("Timer paused")
                         .color(NamedTextColor.GOLD)
-                        .decorate(TextDecoration.BOLD);
+                        .decorate(TextDecoration.ITALIC);
 
             }
 
@@ -389,6 +399,15 @@ public class Game {
                         .replace("_", " "))
                 .reduce((a, b) -> a + "," + b)
                 .orElse("");
+    }
+
+    public String[] getDifficultiesAsArray(){
+        return difficulties.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(e -> e.getKey().name()
+                        .toLowerCase()
+                        .replace("_", " "))
+                .toArray(String[]::new);
     }
 
 }

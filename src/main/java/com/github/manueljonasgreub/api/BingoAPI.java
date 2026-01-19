@@ -17,9 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,18 +28,44 @@ public class BingoAPI {
     private final String API_BASE_URL = BingoMain.getInstance().getApiBaseUrl();
     private List<BingoItemDTO> bingoItems;
 
-    public BingoAPIResponse fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String difficulty, List<Team> teams, PlacementMode placementMode) {
+    public BingoAPIResponse fetchBingoItems(int gridSize, String gamemode, String[] teamNames, String[] difficulties, List<Team> teams, PlacementMode placementMode) {
         try {
 
             String apiUrl = API_BASE_URL + "/create/";
 
             JsonObject requestBody = new JsonObject();
-            requestBody.addProperty("grid_size", gridSize);
-            requestBody.addProperty("game_mode", gamemode);
-            String teamNamesString = String.join(",", teamNames);
-            requestBody.addProperty("team_names", teamNamesString);
-            requestBody.addProperty("difficulty", difficulty);
-            requestBody.addProperty("placement_mode", placementMode.toString().toLowerCase(Locale.ROOT));
+            JsonObject settings = new JsonObject();
+
+            settings.addProperty("grid_size", gridSize);
+            settings.addProperty("game_mode", gamemode);
+            settings.addProperty("game_version", "1.21.10");
+            settings.addProperty("placement_mode", placementMode.toString().toLowerCase(Locale.ROOT));
+
+            com.google.gson.JsonArray diffArr = new com.google.gson.JsonArray();
+            if (difficulties != null) {
+                for (String d : difficulties) {
+                    if (d != null && !d.isBlank()) diffArr.add(d.toLowerCase(Locale.ROOT));
+                }
+            }
+            settings.add("difficulties", diffArr);
+
+
+            com.google.gson.JsonArray teamsArr = new com.google.gson.JsonArray();
+            if (teamNames != null) {
+                for (int i = 0; i < teamNames.length; i++) {
+                    String name = teamNames[i];
+                    if (name == null || name.isBlank()) continue;
+
+                    JsonObject t = new JsonObject();
+                    t.addProperty("name", name);
+
+
+                    teamsArr.add(t);
+                }
+            }
+            settings.add("teams", teamsArr);
+            requestBody.add("settings", settings);
+
 
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -51,8 +75,8 @@ public class BingoAPI {
             connection.setDoOutput(true);
 
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.toString().getBytes("utf-8");
-                os.write(input, 0, input.length);
+                byte[] input = requestBody.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                os.write(input);
             }
 
             int code = connection.getResponseCode();
@@ -78,27 +102,37 @@ public class BingoAPI {
                 return null;
             }
 
-
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            JsonObject mapRAWJson = jsonResponse.getAsJsonObject("mapRAW");
+            JsonObject mapRAWJson = jsonResponse.getAsJsonObject("map_raw");
 
             Gson gson = new Gson();
             MapRAW mapRAW = gson.fromJson(mapRAWJson, MapRAW.class);
-            String mapURL = jsonResponse.get("mapURL").getAsString();
+            String mapURL = jsonResponse.get("map_url").getAsString();
 
-            for (JsonElement teamJson : mapRAWJson.getAsJsonObject("settings").getAsJsonArray("teams")) {
-                String teamName = teamJson.getAsJsonObject().get("name").getAsString();
-                String placement = teamJson.getAsJsonObject().get("placement").getAsString();
-                for (Team team : teams) {
-                    if (team.name.equals(teamName)) {
-                        team.setPlacement(placement);
+            if (teams != null && mapRAWJson.has("settings")) {
+                JsonObject settingsJson = mapRAWJson.getAsJsonObject("settings");
+                if (settingsJson.has("teams") && settingsJson.get("teams").isJsonArray()) {
+                    for (JsonElement teamJsonEl : settingsJson.getAsJsonArray("teams")) {
+                        JsonObject teamJson = teamJsonEl.getAsJsonObject();
+                        if (!teamJson.has("name")) continue;
+
+                        String teamName = teamJson.get("name").getAsString();
+                        String placement = teamJson.has("placement") ? teamJson.get("placement").getAsString() : null;
+
+                        for (Team team : teams) {
+                            if (team != null && team.name.equals(teamName)) {
+                                if (placement != null) team.setPlacement(placement);
+                            }
+                        }
                     }
                 }
             }
 
             BingoAPIResponse bingoResponse = new BingoAPIResponse();
             bingoResponse.setMapRAW(mapRAW);
-            bingoResponse.setMapURL(API_BASE_URL + mapURL);
+
+            // map_url ist im Beispiel ein relativer /public/... path
+            bingoResponse.setMapURL(mapURL.startsWith("http") ? mapURL : (API_BASE_URL + mapURL));
 
             return bingoResponse;
 
@@ -116,6 +150,7 @@ public class BingoAPI {
             requestBody.add("settings", new Gson().toJsonTree(mapRAW.getSettings()));
             requestBody.add("items", new Gson().toJsonTree(mapRAW.getItems()));
 
+
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -128,6 +163,12 @@ public class BingoAPI {
                 os.write(input, 0, input.length);
             }
 
+            int status = connection.getResponseCode();
+            InputStream stream = (status >= 200 && status < 300)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
             StringBuilder content = new StringBuilder();
@@ -137,9 +178,13 @@ public class BingoAPI {
             in.close();
             connection.disconnect();
 
+            if (status < 200 || status >= 300) {
+                throw new IOException("HTTP " + status + " /update/ -> " + content);
+            }
+
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
             String bingo = jsonResponse.has("bingo") && !jsonResponse.get("bingo").isJsonNull() ? jsonResponse.get("bingo").getAsString() : null;
-            String urlPath = jsonResponse.get("url").getAsString();
+            String urlPath = jsonResponse.get("map_url").getAsString();
 
             return new BingoAPIUpdateResponse(bingo, API_BASE_URL + urlPath);
 
@@ -150,18 +195,24 @@ public class BingoAPI {
     }
 
 
-    public List<ItemStack> fetchTestItems(int gridSize, String difficultyCsv, PlacementMode placementMode) {
+    public List<ItemStack> fetchTestItems(int gridSize, String[] difficultyArray, PlacementMode placementMode) {
         try {
             String apiUrl = API_BASE_URL + "/create/";
 
             JsonObject requestBody = new JsonObject();
 
-            requestBody.addProperty("grid_size", gridSize);
+            JsonObject settings = new JsonObject();
+            settings.addProperty("grid_size", gridSize);
+            settings.addProperty("game_mode", "1P");
+            settings.addProperty("placement_mode", placementMode.toString().toLowerCase(Locale.ROOT));
 
+            JsonArray difficulties = new JsonArray();
+            for (String d : difficultyArray) {
+                difficulties.add(d);
+            }
+            settings.add("difficulties", difficulties);
 
-            requestBody.addProperty("difficulty", difficultyCsv);
-
-            requestBody.addProperty("placement_mode", placementMode.toString().toLowerCase(Locale.ROOT));
+            requestBody.add("settings", settings);
 
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -203,7 +254,7 @@ public class BingoAPI {
             }
 
             JsonObject jsonResponse = JsonParser.parseString(content.toString()).getAsJsonObject();
-            JsonObject mapRAW = jsonResponse.getAsJsonObject("mapRAW");
+            JsonObject mapRAW = jsonResponse.getAsJsonObject("map_raw");
             JsonArray items = mapRAW.getAsJsonArray("items");
 
             int expected = gridSize * gridSize;
