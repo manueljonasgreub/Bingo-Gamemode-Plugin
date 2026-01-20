@@ -33,6 +33,11 @@ public class PlayerEventListener implements Listener {
                         .decorate(TextDecoration.BOLD)
                 )
         );
+
+        if (!BingoMain.getInstance().getGame().isRunning())
+        {
+            BingoMain.getInstance().getGame().removeBingoMaps(player);
+        }
     }
 
     @EventHandler
@@ -75,6 +80,21 @@ public class PlayerEventListener implements Listener {
 
         if(event.getView().getTitle().equals("Bingo Items")) {
             event.setCancelled(true);
+            return;
         }
+
+        Player player = (Player)event.getWhoClicked();
+        ItemStack item = event.getCurrentItem();
+        BingoItemDTO bingoItem;
+        if (BingoMain.getInstance().getGame().isBingoItem(item)) {
+
+            for(BingoItemDTO foundItem : BingoMain.getInstance().getGame().getBingoItems()){
+                if (item.getType().name().toLowerCase().equals(foundItem.getId())) {
+                    bingoItem = foundItem;
+                    BingoMain.getInstance().getGame().playerFoundItem(player, bingoItem);
+                }
+            }
+        }
+
     }
 }

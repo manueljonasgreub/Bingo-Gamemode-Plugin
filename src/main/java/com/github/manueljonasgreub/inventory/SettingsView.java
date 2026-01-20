@@ -52,6 +52,7 @@ public class SettingsView implements Listener {
         setTimeItem(gui);
         setCountdownItem(gui);
         setItemsItem(gui);
+        setTeamsItem(gui);
 
     }
 
@@ -76,6 +77,9 @@ public class SettingsView implements Listener {
                 break;
             case 12:
                 handleItemsClick(player, clickedItem);
+                break;
+            case 13:
+                handleTeamsClick(player, clickedItem);
                 break;
             case 22:
                 handleStartGameClick(player, clickedItem);
@@ -102,14 +106,27 @@ public class SettingsView implements Listener {
     private void setItemsItem(Inventory inv) {
         ItemStack item = new ItemStack(Material.ITEM_FRAME);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Items Settings");
+        meta.setDisplayName(ChatColor.GOLD + "Item Settings");
         meta.lore(List.of(
                 Component.text(ChatColor.GRAY + ""),
-                Component.text(ChatColor.GRAY + "Click to edit Bingo items.")
+                Component.text(ChatColor.GRAY + "Click to edit bingo items.")
         ));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
         inv.setItem(12, item);
+    }
+
+    private void setTeamsItem(Inventory inv) {
+        ItemStack item = new ItemStack(Material.OAK_SIGN);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Team Settings");
+        meta.lore(List.of(
+                Component.text(ChatColor.GRAY + ""),
+                Component.text(ChatColor.GRAY + "Click to edit bingo teams.")
+        ));
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+        item.setItemMeta(meta);
+        inv.setItem(13, item);
     }
 
 
@@ -199,9 +216,18 @@ public class SettingsView implements Listener {
 
         InventoryView view = player.getOpenInventory();
         Inventory inv = view.getTopInventory();
-        setStartItem(inv);
         player.closeInventory();
         ItemsView iv = new ItemsView();
+        iv.openGUI(player);
+
+    }
+
+    private void handleTeamsClick(Player player, ItemStack clickedItem) {
+
+        InventoryView view = player.getOpenInventory();
+        Inventory inv = view.getTopInventory();
+        player.closeInventory();
+        TeamsView iv = new TeamsView();
         iv.openGUI(player);
 
     }

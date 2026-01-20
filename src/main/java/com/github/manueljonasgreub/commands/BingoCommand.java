@@ -63,17 +63,6 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 sv.openGUI(player);
                 return true;
 
-            case "set":
-                if (args.length == 2) {
-                    try {
-                        BingoMain.getInstance().getGame().set(Integer.parseInt(args[1]));
-                    } catch (Exception ex) {
-                        sendUsage(player);
-                    }
-                } else {
-                    sendUsage(player);
-                }
-                return true;
 
             case "reset":
                 if (args.length == 2){
@@ -92,23 +81,6 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 else sendResetUsage(player);
                 return true;
 
-            case "url":
-                if (!(args.length >= 2)) sendUsage(player);
-                else{
-
-                    if(args[1].equals("reset")) {
-                        BingoMain.getInstance().getConfig().set("api-base-url", "http://167.99.130.136");
-                        BingoMain.getInstance().saveConfig();
-                        player.sendMessage("Config reset to default.");
-                    }
-                    else{
-                        BingoMain.getInstance().getConfig().set("api-base-url", args[1]);
-                        BingoMain.getInstance().saveConfig();
-                        player.sendMessage("URL set to §b" + args[1]);
-                    }
-
-                }
-                return true;
 
             case "team":
                 if (args.length == 3) {
@@ -174,13 +146,7 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (args.length == 1) {
-            return List.of("help", "pause", "reset", "resume", "set", "settings", "start", "stop", "team", "url");
-        }
-        if (args.length == 2 && args[0].equals("set")) {
-            return List.of("<time>");
-        }
-        if (args.length == 2 && args[0].equals("url")) {
-            return List.of("<url>");
+            return List.of("help", "pause", "reset", "resume", "settings", "start", "stop", "team");
         }
         if (args.length == 2 && args[0].equals("team")) {
             return List.of("join", "leave", "list");
@@ -239,28 +205,10 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                         .text("Resumes the game after pause")
                         .color(NamedTextColor.GRAY)));
         player.sendMessage(Component
-                .text("    /bingo toggle")
-                .color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
-                .hoverEvent(Component
-                        .text("Toggles whether the timer counts up or down")
-                        .color(NamedTextColor.GRAY)));
-        player.sendMessage(Component
-                .text("    /bingo set <time>")
-                .color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
-                .hoverEvent(Component
-                        .text("Sets the timer to the given time")
-                        .color(NamedTextColor.GRAY)));
-        player.sendMessage(Component
                 .text("    /bingo team <join|leave|list>")
                 .color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
                 .hoverEvent(Component
                         .text("Manages the teams")
-                        .color(NamedTextColor.GRAY)));
-        player.sendMessage(Component
-                .text("    /bingo url <url>")
-                .color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
-                .hoverEvent(Component
-                        .text("Sets the url of the mapgen api (e.g. https://bingo.example.com)")
                         .color(NamedTextColor.GRAY)));
         player.sendMessage(Component
                 .text("    /bingo help")

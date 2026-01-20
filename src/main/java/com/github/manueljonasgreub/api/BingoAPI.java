@@ -5,6 +5,7 @@ import com.github.manueljonasgreub.item.BingoItem;
 import com.github.manueljonasgreub.item.BingoItemDTO;
 import com.github.manueljonasgreub.team.Team;
 import com.github.manueljonasgreub.utils.PlacementMode;
+import com.github.manueljonasgreub.utils.TeamColor;
 import com.google.gson.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -51,14 +52,19 @@ public class BingoAPI {
 
 
             com.google.gson.JsonArray teamsArr = new com.google.gson.JsonArray();
-            if (teamNames != null) {
-                for (int i = 0; i < teamNames.length; i++) {
-                    String name = teamNames[i];
+            if (teams != null) {
+                for (Team team : teams) {
+                    if (team == null) continue;
+
+                    String name = team.name;
                     if (name == null || name.isBlank()) continue;
 
                     JsonObject t = new JsonObject();
                     t.addProperty("name", name);
 
+                    if (team.color != null) {
+                        t.addProperty("color", team.color.GetHexFromColor());
+                    }
 
                     teamsArr.add(t);
                 }
@@ -111,27 +117,28 @@ public class BingoAPI {
 
             if (teams != null && mapRAWJson.has("settings")) {
                 JsonObject settingsJson = mapRAWJson.getAsJsonObject("settings");
-                if (settingsJson.has("teams") && settingsJson.get("teams").isJsonArray()) {
+                /*if (settingsJson.has("teams") && settingsJson.get("teams").isJsonArray()) {
                     for (JsonElement teamJsonEl : settingsJson.getAsJsonArray("teams")) {
                         JsonObject teamJson = teamJsonEl.getAsJsonObject();
                         if (!teamJson.has("name")) continue;
 
                         String teamName = teamJson.get("name").getAsString();
                         String placement = teamJson.has("placement") ? teamJson.get("placement").getAsString() : null;
+                        String color = teamJson.has("color") ? teamJson.get("color").getAsString() : null;
 
                         for (Team team : teams) {
                             if (team != null && team.name.equals(teamName)) {
                                 if (placement != null) team.setPlacement(placement);
+                                if (color != null) team.color = TeamColor.valueOf(color.toUpperCase());
                             }
                         }
                     }
-                }
+                }*/
             }
 
             BingoAPIResponse bingoResponse = new BingoAPIResponse();
             bingoResponse.setMapRAW(mapRAW);
 
-            // map_url ist im Beispiel ein relativer /public/... path
             bingoResponse.setMapURL(mapURL.startsWith("http") ? mapURL : (API_BASE_URL + mapURL));
 
             return bingoResponse;
@@ -142,12 +149,23 @@ public class BingoAPI {
         }
     }
 
-    public BingoAPIUpdateResponse updateBingoCard(MapRAW mapRAW) {
+    public BingoAPIUpdateResponse updateBingoCard(MapRAW mapRAW, List<Team> teams) {
         try {
             String apiUrl = API_BASE_URL + "/update/";
 
             JsonObject requestBody = new JsonObject();
-            requestBody.add("settings", new Gson().toJsonTree(mapRAW.getSettings()));
+            JsonObject settings = new Gson().toJsonTree(mapRAW.getSettings()).getAsJsonObject();
+
+            JsonArray teamsArr = new JsonArray();
+            for (Team team : teams) {
+                JsonObject t = new JsonObject();
+                t.addProperty("name", team.name);
+                t.addProperty("color", team.color.name().toLowerCase(Locale.ROOT)); // falls vorhanden
+                teamsArr.add(t);
+            }
+            settings.add("teams", teamsArr);
+
+            requestBody.add("settings", settings);
             requestBody.add("items", new Gson().toJsonTree(mapRAW.getItems()));
 
 

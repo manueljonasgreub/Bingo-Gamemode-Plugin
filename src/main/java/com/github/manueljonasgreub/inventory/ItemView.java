@@ -60,7 +60,6 @@ public class ItemView {
 
                 itemMeta.displayName(Component.text(color + item.getName()));
 
-                System.out.println(item.getName() + " - " + itemDiff);
                 itemStack.setItemMeta(itemMeta);
             }
             else{

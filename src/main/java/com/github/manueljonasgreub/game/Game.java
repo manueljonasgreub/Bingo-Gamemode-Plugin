@@ -15,14 +15,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,13 +70,16 @@ public class Game {
         this.bingoItems = bingoItems;
     }
 
+    private static final NamespacedKey BINGO_MAP_KEY =
+            new NamespacedKey(BingoMain.getInstance(), "bingo_preview_map");
+
     public Game() {
 
         teams = new ArrayList<>();
-        teams.add(new Team("1"));
-        teams.add(new Team("2"));
-        teams.add(new Team("3"));
-        teams.add(new Team("4"));
+        teams.add(new Team("1", "red"));
+        teams.add(new Team("2", "yellow"));
+        teams.add(new Team("3", "green"));
+        teams.add(new Team("4", "blue"));
 
         for (Difficulty d : Difficulty.values()) {
             difficulties.put(d, true);
@@ -163,20 +166,11 @@ public class Game {
             ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
             MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
             mapMeta.setMapView(mapView);
+            mapMeta.getPersistentDataContainer().set(BINGO_MAP_KEY, PersistentDataType.BYTE, (byte) 1);
             mapItem.setItemMeta(mapMeta);
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                boolean hasMap = false;
-                for (ItemStack itemStack : player.getInventory()) {
-                    if (itemStack != null) {
-                        if (itemStack.getType().equals(Material.FILLED_MAP)) {
-                            itemStack.setItemMeta(mapMeta);
-                            hasMap = true;
-                        }
-                    }
-                }
-
-                if (!hasMap) player.getInventory().addItem(mapItem);
+                player.getInventory().addItem(mapItem);
             }
 
         } catch (Exception ex) {
@@ -206,14 +200,28 @@ public class Game {
 
                 message = Component
                         .text(hoursFormatted + ":" + minutesFormatted + ":" + secondsFormatted)
-                        .color(NamedTextColor.GOLD)
+                        .color(NamedTextColor.WHITE)
                         .decorate(TextDecoration.BOLD);
 
             } else {
 
+                int phase = (int) (player.getWorld().getGameTime() % 80);
+
+                String dots;
+
+                if (phase <= 20) {
+                    dots = "";
+                } else if (phase <= 40) {
+                    dots = "·";
+                } else if (phase <= 60) {
+                    dots = "· ·";
+                } else {
+                    dots = "· · ·";
+                }
+
                 message = Component
-                        .text("Timer paused")
-                        .color(NamedTextColor.GOLD)
+                        .text(dots +" Timer paused "+ dots)
+                        .color(NamedTextColor.YELLOW)
                         .decorate(TextDecoration.ITALIC);
 
             }
@@ -226,6 +234,8 @@ public class Game {
 
 
     public boolean isBingoItem(ItemStack item) {
+
+        if(!isRunning) return false;
 
         for (BingoItemDTO bingoItem : bingoItems) {
             if (bingoItem.getId().equals(item.getType().name().toLowerCase())) {
@@ -264,7 +274,7 @@ public class Game {
 
                     try {
                         BingoAPI api = new BingoAPI();
-                        BingoAPIUpdateResponse response = api.updateBingoCard(mapRAW);
+                        BingoAPIUpdateResponse response = api.updateBingoCard(mapRAW, teams);
 
                         if (response != null) {
                             var bingo = response.getBingo();
@@ -344,6 +354,8 @@ public class Game {
             pause();
         }
 
+        cleanupAllPlayers();
+
     }
 
 
@@ -408,6 +420,26 @@ public class Game {
                         .toLowerCase()
                         .replace("_", " "))
                 .toArray(String[]::new);
+    }
+
+    public void removeBingoMaps(Player player) {
+        PlayerInventory inv = player.getInventory();
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack it = inv.getItem(i);
+            if (isBingoMap(it)) inv.setItem(i, null);
+        }
+    }
+
+    public void cleanupAllPlayers() {
+        for (Player p : Bukkit.getOnlinePlayers()) removeBingoMaps(p);
+    }
+
+    private boolean isBingoMap(ItemStack it) {
+        if (it == null || it.getType() != Material.FILLED_MAP) return false;
+        ItemMeta im = it.getItemMeta();
+        if (im == null) return false;
+        Byte v = im.getPersistentDataContainer().get(BINGO_MAP_KEY, PersistentDataType.BYTE);
+        return v != null && v == 1;
     }
 
 }

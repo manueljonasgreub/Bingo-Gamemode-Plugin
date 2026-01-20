@@ -5,6 +5,7 @@ import com.github.manueljonasgreub.commands.PrintNameCommand;
 import com.github.manueljonasgreub.game.Game;
 import com.github.manueljonasgreub.inventory.ItemsView;
 import com.github.manueljonasgreub.inventory.SettingsView;
+import com.github.manueljonasgreub.inventory.TeamsView;
 import com.github.manueljonasgreub.listeners.PlayerEventListener;
 import com.github.manueljonasgreub.utils.BatchFileCreator;
 import org.bukkit.Bukkit;
@@ -90,12 +91,14 @@ public final class BingoMain extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         getServer().getPluginManager().registerEvents(new SettingsView(), this);
         getServer().getPluginManager().registerEvents(new ItemsView(), this);
+        getServer().getPluginManager().registerEvents(new TeamsView(), this);
 
     }
 
     @Override
     public void onDisable() {
         saveConfig();
+        game.cleanupAllPlayers();
     }
 
     public static BingoMain getInstance(){
