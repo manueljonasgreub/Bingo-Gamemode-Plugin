@@ -70,8 +70,7 @@ public class Game {
         this.bingoItems = bingoItems;
     }
 
-    private static final NamespacedKey BINGO_MAP_KEY =
-            new NamespacedKey(BingoMain.getInstance(), "bingo_preview_map");
+
 
     public Game() {
 
@@ -157,21 +156,9 @@ public class Game {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
 
-            MapView mapView = Bukkit.createMap(BingoMain.getInstance().getServer().getWorld("world"));
-            mapView.getRenderers().clear();
 
-            BingoMapRenderer renderer = new BingoMapRenderer(mapURL);
-            mapView.addRenderer(renderer);
-
-            ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
-            MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
-            mapMeta.setMapView(mapView);
-            mapMeta.getPersistentDataContainer().set(BINGO_MAP_KEY, PersistentDataType.BYTE, (byte) 1);
-            mapItem.setItemMeta(mapMeta);
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.getInventory().addItem(mapItem);
-            }
+            ItemStack mapItem = MapItemService.createMapItem(mapURL);
+            MapItemService.giveMapItemsToAll(mapItem);
 
         } catch (Exception ex) {
             BingoMain.getInstance().getLogger().info(ex.getMessage());
@@ -282,26 +269,7 @@ public class Game {
                             BingoMain.getInstance().getLogger().info(mapURL);
 
 
-                            MapView mapView = Bukkit.createMap(BingoMain.getInstance().getServer().getWorld("world"));
-                            mapView.getRenderers().clear();
 
-                            BingoMapRenderer renderer = new BingoMapRenderer(mapURL);
-                            mapView.addRenderer(renderer);
-
-                            ItemStack mapItem = new ItemStack(Material.FILLED_MAP);
-                            MapMeta mapMeta = (MapMeta) mapItem.getItemMeta();
-                            mapMeta.setMapView(mapView);
-                            mapItem.setItemMeta(mapMeta);
-
-                            for (Player currentPlayer : Bukkit.getOnlinePlayers()) {
-                                for (ItemStack currentMapItem : currentPlayer.getInventory())
-                                    if (currentMapItem != null) {
-                                        if (currentMapItem.getType().equals(Material.FILLED_MAP)) {
-                                            currentMapItem.setItemMeta(mapMeta);
-                                        }
-                                    }
-
-                            }
 
 
                             if (bingo != null) {
@@ -354,7 +322,7 @@ public class Game {
             pause();
         }
 
-        cleanupAllPlayers();
+        MapItemService.removeMapItemsFromAll();
 
     }
 
@@ -422,25 +390,7 @@ public class Game {
                 .toArray(String[]::new);
     }
 
-    public void removeBingoMaps(Player player) {
-        PlayerInventory inv = player.getInventory();
-        for (int i = 0; i < inv.getSize(); i++) {
-            ItemStack it = inv.getItem(i);
-            if (isBingoMap(it)) inv.setItem(i, null);
-        }
-    }
 
-    public void cleanupAllPlayers() {
-        for (Player p : Bukkit.getOnlinePlayers()) removeBingoMaps(p);
-    }
-
-    private boolean isBingoMap(ItemStack it) {
-        if (it == null || it.getType() != Material.FILLED_MAP) return false;
-        ItemMeta im = it.getItemMeta();
-        if (im == null) return false;
-        Byte v = im.getPersistentDataContainer().get(BINGO_MAP_KEY, PersistentDataType.BYTE);
-        return v != null && v == 1;
-    }
 
 }
 
