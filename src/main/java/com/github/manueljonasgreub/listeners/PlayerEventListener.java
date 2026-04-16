@@ -1,6 +1,7 @@
 package com.github.manueljonasgreub.listeners;
 
 import com.github.manueljonasgreub.BingoMain;
+import com.github.manueljonasgreub.game.MapItemService;
 import com.github.manueljonasgreub.item.BingoItem;
 import com.github.manueljonasgreub.item.BingoItemDTO;
 import net.kyori.adventure.text.Component;
@@ -36,7 +37,7 @@ public class PlayerEventListener implements Listener {
 
         if (!BingoMain.getInstance().getGame().isRunning())
         {
-            BingoMain.getInstance().getGame().removeBingoMaps(player);
+            MapItemService.removeMapItems(player);
         }
     }
 

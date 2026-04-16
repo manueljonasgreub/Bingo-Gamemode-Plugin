@@ -55,7 +55,7 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 return true;
 
             case "stop":
-                BingoMain.getInstance().getGame().DetermineWinner();
+                BingoMain.getInstance().getGame().determineWinner();
                 return true;
 
             case "settings":
@@ -81,47 +81,6 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
                 else sendResetUsage(player);
                 return true;
 
-
-            case "team":
-                if (args.length == 3) {
-                    try {
-                        if (args[1].equals("join")) {
-                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
-                                if (team.name.equals(args[2])) {
-                                    team.addPlayer(player);
-                                    player.sendMessage("§aYou are now in team " + team.name + "!");
-                                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, SoundCategory.PLAYERS, 1.0f, 1.0f);
-                                    return true;
-                                }
-                            }
-                            player.sendMessage("Team " + args[2] + " does not exist.");
-                            return true;
-                        }
-                        if (args[1].equals("leave")) {
-                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
-                                if (team.name.equals(args[2])) {
-                                    team.removePlayer(player);
-                                    player.sendMessage("§cYou are no longer in team " + team.name + "!");
-                                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, SoundCategory.PLAYERS, 1.0f, 1.0f);
-                                    return true;
-                                }
-                            }
-                            player.sendMessage("Team " + args[2] + " does not exist.");
-                            return true;
-                        }
-                        if (args[1].equals("list")) {
-                            for (Team team : BingoMain.getInstance().getGame().getTeams()) {
-                                player.sendMessage(team.name);
-                            }
-                            return true;
-                        }
-                    } catch (Exception ex) {
-                        sendUsage(player);
-                    }
-                } else {
-                    sendUsage(player);
-                }
-                return true;
 
 
             case "pause":
@@ -152,7 +111,7 @@ public class BingoCommand implements CommandExecutor, TabExecutor {
             return List.of("join", "leave", "list");
         }
         if (args.length == 3 && args[0].equals("team") && args[1].equals("join") || args[1].equals("leave")) {
-            List<Team> teams = BingoMain.getInstance().getGame().getTeams();
+            List<Team> teams = BingoMain.getInstance().getGame().getTeamManager().getTeams();
             return teams.stream().map(team -> team.name).toList();
         }
 

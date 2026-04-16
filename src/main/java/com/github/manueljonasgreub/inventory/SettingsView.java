@@ -2,6 +2,7 @@ package com.github.manueljonasgreub.inventory;
 
 import com.github.manueljonasgreub.BingoMain;
 import com.github.manueljonasgreub.game.Game;
+import com.github.manueljonasgreub.game.GameTimer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -24,6 +25,8 @@ public class SettingsView implements Listener {
 
     private Inventory gui;
     private Game game = BingoMain.getInstance().getGame();
+
+    private GameTimer timer = game.getTimer();
 
     public SettingsView() {
         gui = Bukkit.createInventory(null, 27, "Settings");
@@ -136,7 +139,7 @@ public class SettingsView implements Listener {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.YELLOW + "Toggle Timemode");
 
-        if(BingoMain.getInstance().getGame().isCountdown()){
+        if(timer.isCountdown()){
             meta.lore(List.of(
                     Component.text(ChatColor.GRAY + ""),
                     Component.text(ChatColor.GRAY + "Timer"),
@@ -170,7 +173,7 @@ public class SettingsView implements Listener {
 
     private void setCountdownItem(Inventory inv) {
 
-        int time = game.getStartTime();
+        int time = timer.getStartTime();
         int hours = time / 3600;
         int remainingSeconds = time % 3600;
         int minutes = remainingSeconds / 60;
@@ -234,7 +237,7 @@ public class SettingsView implements Listener {
 
     private void handleTimeClick(Player player, ItemStack clickedItem) {
 
-        game.toggleContdown();
+        timer.toggleCountdown();
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
         InventoryView view = player.getOpenInventory();
@@ -248,19 +251,19 @@ public class SettingsView implements Listener {
         if(clickType.isLeftClick()){
             if(clickType.isShiftClick())
             {
-                game.setStartTime(game.getStartTime() + 60);
+                timer.setStartTime(timer.getStartTime() + 60);
             }
             else{
-                game.setStartTime(game.getStartTime() + 600);
+                timer.setStartTime(timer.getStartTime() + 600);
             }
         }
         else if(clickType.isRightClick()){
             if(clickType.isShiftClick())
             {
-                game.setStartTime(Math.max(0, game.getStartTime() - 60));
+                timer.setStartTime(timer.getStartTime() - 60);
             }
             else{
-                game.setStartTime(Math.max(0, game.getStartTime() - 600));
+                timer.setStartTime(timer.getStartTime() - 600);
             }
         }
 

@@ -32,7 +32,7 @@ public class TeamsView implements Listener {
 
     private final Game game = BingoMain.getInstance().getGame();
 
-    private List<Team> teams = game.getTeams();
+    private List<Team> teams = game.getTeamManager().getTeams();
 
 
     private final int[] playerSlots = {
